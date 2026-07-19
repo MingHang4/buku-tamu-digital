@@ -1,0 +1,15 @@
+name: Fail First Demo
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  fail-first:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Intentional failure
+        run: |
+          echo "This job fails intentionally for demo purposes"
+          exit 1
