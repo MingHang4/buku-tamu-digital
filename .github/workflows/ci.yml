@@ -68,10 +68,23 @@ jobs:
         run: docker build -t buku-tamu-frontend:latest ./frontend
 
       - name: Build Docker Compose stack
-        run: docker compose up -d --build
+        run: |
+          docker compose up -d --build
+          docker compose ps
 
       - name: Verify backend health
-        run: curl --fail http://localhost:4000/health
+        run: |
+          echo "Waiting for backend /health to become available..."
+          for i in $(seq 1 30); do
+            if curl --silent --fail http://localhost:4000/health; then
+              echo "Backend is healthy"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Backend health check failed after retries"
+          docker compose logs backend --tail 100
+          exit 1
 
       - name: Cleanup test database
         if: always()
