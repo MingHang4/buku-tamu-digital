@@ -25,11 +25,22 @@ async function initializeDatabase() {
   }
 }
 
+async function checkDatabaseConnected() {
+  try {
+    await query('SELECT 1');
+    return true;
+  } catch (error) {
+    console.warn('Health check DB query failed:', error.message);
+    return false;
+  }
+}
+
 app.use(cors());
 app.use(express.json());
 
-app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', database: dbReady ? 'connected' : 'unavailable' });
+app.get('/health', async (_req, res) => {
+  const connected = await checkDatabaseConnected();
+  res.json({ status: 'ok', database: connected ? 'connected' : 'disconnect' });
 });
 
 app.use('/api/guestbook', guestbookRouter);
