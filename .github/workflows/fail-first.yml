@@ -1,15 +1,17 @@
-name: Fail First Demo
+name: Demo Success
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  fail-first:
+  demo-success:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Intentional failure
+      - name: Demo success
         run: |
-          echo "This job fails intentionally for demo purposes"
-          exit 1
+          echo "This job runs successfully for demo purposes"
+          echo "Node version: $(node --version || echo 'node not available')"
+          echo "Npm version: $(npm --version || echo 'npm not available')"
+          echo "Demo workflow completed successfully"
