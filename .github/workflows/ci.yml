@@ -44,7 +44,12 @@ jobs:
             -p 5432:5432 \
             -v ${{ github.workspace }}/backend/init.sql:/docker-entrypoint-initdb.d/init.sql \
             postgres:16-alpine
-          sleep 8
+          echo "Waiting for Postgres to accept connections..."
+          for i in $(seq 1 30); do
+            docker exec test-db pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" && break
+            sleep 2
+          done
+          docker logs test-db --tail 100 || true
 
       - name: Run backend automated tests
         working-directory: ./backend
